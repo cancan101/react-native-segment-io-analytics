@@ -18,6 +18,7 @@ import android.content.Context;
 public class RNSegmentIOAnalyticsModule extends ReactContextBaseJavaModule {
   private static Analytics mAnalytics = null;
   private Boolean mEnabled = true;
+  private Boolean mDebug = false;
 
   @Override
   public String getName() {
@@ -41,6 +42,11 @@ public class RNSegmentIOAnalyticsModule extends ReactContextBaseJavaModule {
       Context context = getReactApplicationContext().getApplicationContext();
       Builder builder = new Analytics.Builder(context, writeKey);
       builder.flushQueueSize(flushAt);
+
+      if (mDebug) {
+        builder.logLevel(Analytics.LogLevel.DEBUG);
+      }
+
       mAnalytics = builder.build();
     } else {
       log("Segment Analytics already initialized. Refusing to re-initialize.");
@@ -55,8 +61,7 @@ public class RNSegmentIOAnalyticsModule extends ReactContextBaseJavaModule {
     if (!mEnabled) {
       return;
     }
-    Options options = new Options();
-    mAnalytics.identify(userId, toTraits(traits), options);
+    mAnalytics.identify(userId, toTraits(traits), toOptions(null));
   }
 
   /*
@@ -102,7 +107,13 @@ public class RNSegmentIOAnalyticsModule extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void debug(Boolean isEnabled) {
-    log("Debug not implemented for Android");
+    if (isEnabled == mDebug) {
+      return;
+    } else if (mAnalytics == null) {
+      mDebug = isEnabled;
+    } else {
+      log("On Android, debug level may not be changed after calling setup");
+    }
   }
 
   /*
