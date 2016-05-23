@@ -2,7 +2,8 @@
 
 Written by Tal Kain <tal@kain.net>
 
-Based on SegmentIO (https://segment.com) Analytics project. See [iOS SDK](https://github.com/segmentio/analytics-ios) and [Android SDK](https://github.com/segmentio/analytics-android).
+Based on SegmentIO (https://segment.com) Analytics project.
+See [iOS SDK](https://github.com/segmentio/analytics-ios) and [Android SDK](https://github.com/segmentio/analytics-android).
 
 
 ## iOS Installation
@@ -21,7 +22,7 @@ import com.facebook.react.ReactPackage;
 import com.smore.RNSegmentIOAnalytics.RNSegmentIOAnalyticsPackage; // <-- add this
 ...
 
-      return Arrays.<ReactPackage>asList( 
+      return Arrays.<ReactPackage>asList(
         new MainReactPackage(),
         new RNSegmentIOAnalyticsPackage(), // <-- add this
         ...
@@ -54,7 +55,7 @@ ld: '......./Pods/GoogleIDFASupport/Libraries/libAdIdAccessLibrary.a(TAGActualAd
 There are instructions for fixing it here: https://stackoverflow.com/questions/31395260/google-analytics-libadidaccess-a-does-not-contain-bitcode
 
 ## Deployment
-Deploying the project can be done using ```npm publish``` command. 
+Deploying the project can be done using ```npm publish``` command.
 Read more about it here: https://gist.github.com/coolaj86/1318304
 
 ## License
