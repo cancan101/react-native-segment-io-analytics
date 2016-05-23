@@ -3,12 +3,12 @@
  * @flow
  *
  * Created by Ricky Reusser <rsreusser@gmail.com>.
+ * and Alex Rothberg
  * Copyright (c) 2016. All rights reserved.
  */
 'use strict';
 
 var NativeRNSegmentIOAnalytics = require('react-native').NativeModules.RNSegmentIOAnalytics;
-var toHashOfStrings = require('./lib/to-hash-of-strings');
 
 /**
  * RNSegmentIOAnalytics is a React Native Android wrapper for the Segment.com Analytics SDK.
@@ -33,22 +33,22 @@ var RNSegmentIOAnalytics = {
      * https://segment.com/docs/libraries/android/#identify
      */
     identifyUser: function (userId, traits) {
-        NativeRNSegmentIOAnalytics.identifyUser(userId, toHashOfStrings(traits));
+        NativeRNSegmentIOAnalytics.identifyUser(userId, traits);
     },
 
     /*
      * https://segment.com/docs/libraries/android/#track
      */
     track: function (trackText, properties) {
-        NativeRNSegmentIOAnalytics.track(trackText, toHashOfStrings(properties));
+        NativeRNSegmentIOAnalytics.track(trackText, properties);
     },
 
     /*
      * https://segment.com/docs/libraries/android/#screen
      */
     screen: function (screenName, properties) {
-        console.log("Segment LOGGING", screenName, toHashOfStrings(properties));
-        NativeRNSegmentIOAnalytics.screen(screenName, toHashOfStrings(properties));
+        console.log("Segment LOGGING", screenName, properties);
+        NativeRNSegmentIOAnalytics.screen(screenName, properties);
     },
 
     /*

@@ -6,6 +6,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 
+import com.facebook.react.bridge.ReadableType;
 import com.segment.analytics.Analytics;
 import com.segment.analytics.Analytics.Builder;
 import com.segment.analytics.Properties;
@@ -129,11 +130,31 @@ public class RNSegmentIOAnalyticsModule extends ReactContextBaseJavaModule {
     ReadableMapKeySetIterator iterator = map.keySetIterator();
     while (iterator.hasNextKey()) {
       String key = iterator.nextKey();
-      String value = map.getString(key);
-      props.putValue(key, value);
-
+      ReadableType type = map.getType(key);
+      switch (type){
+        case Array:
+          props.putValue(key, map.getArray(key));
+          break;
+        case Boolean:
+          props.putValue(key, map.getBoolean(key));
+          break;
+        case Map:
+          props.putValue(key, map.getMap(key));
+          break;
+        case Null:
+          props.putValue(key, null);
+          break;
+        case Number:
+          props.putValue(key, map.getDouble(key));
+          break;
+        case String:
+          props.putValue(key, map.getString(key));
+          break;
+        default:
+          log("Unknown type:" + type.name());
+          break;
+      }
     }
-
     return props;
   }
 
@@ -146,9 +167,30 @@ public class RNSegmentIOAnalyticsModule extends ReactContextBaseJavaModule {
     ReadableMapKeySetIterator iterator = map.keySetIterator();
     while (iterator.hasNextKey()) {
       String key = iterator.nextKey();
-      String value = map.getString(key);
-      traits.putValue(key, value);
-
+      ReadableType type = map.getType(key);
+      switch (type){
+        case Array:
+          traits.putValue(key, map.getArray(key));
+          break;
+        case Boolean:
+          traits.putValue(key, map.getBoolean(key));
+          break;
+        case Map:
+          traits.putValue(key, map.getMap(key));
+          break;
+        case Null:
+          traits.putValue(key, null);
+          break;
+        case Number:
+          traits.putValue(key, map.getDouble(key));
+          break;
+        case String:
+          traits.putValue(key, map.getString(key));
+          break;
+        default:
+          log("Unknown type:" + type.name());
+          break;
+      }
     }
     return traits;
   }
