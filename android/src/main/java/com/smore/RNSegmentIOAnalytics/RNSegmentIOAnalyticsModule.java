@@ -17,8 +17,8 @@ import android.content.Context;
 
 public class RNSegmentIOAnalyticsModule extends ReactContextBaseJavaModule {
   private static boolean initialized = false;
-  private Boolean mEnabled = true;
-  private Boolean mDebug = false;
+  private boolean mEnabled = true;
+  private boolean mDebug = false;
 
   @Override
   public String getName() {
