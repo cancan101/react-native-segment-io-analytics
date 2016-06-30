@@ -16,7 +16,7 @@ import android.util.Log;
 import android.content.Context;
 
 public class RNSegmentIOAnalyticsModule extends ReactContextBaseJavaModule {
-  private static Analytics mAnalytics = null;
+  private static boolean initialized = false;
   private Boolean mEnabled = true;
   private Boolean mDebug = false;
 
@@ -38,7 +38,7 @@ public class RNSegmentIOAnalyticsModule extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void setup(String writeKey, Integer flushAt, Boolean shouldUseLocationServices) {
-    if (mAnalytics == null) {
+    if (!initialized) {
       Context context = getReactApplicationContext().getApplicationContext();
       Builder builder = new Analytics.Builder(context, writeKey);
       builder.flushQueueSize(flushAt);
@@ -47,7 +47,8 @@ public class RNSegmentIOAnalyticsModule extends ReactContextBaseJavaModule {
         builder.logLevel(Analytics.LogLevel.DEBUG);
       }
 
-      mAnalytics = builder.build();
+      Analytics analytics = builder.build();
+      Analytics.setSingletonInstance(analytics);
     } else {
       log("Segment Analytics already initialized. Refusing to re-initialize.");
     }
@@ -61,7 +62,7 @@ public class RNSegmentIOAnalyticsModule extends ReactContextBaseJavaModule {
     if (!mEnabled) {
       return;
     }
-    mAnalytics.identify(userId, toTraits(traits), toOptions(null));
+    Analytics.with(null).identify(userId, toTraits(traits), toOptions(null));
   }
 
   /*
@@ -72,7 +73,7 @@ public class RNSegmentIOAnalyticsModule extends ReactContextBaseJavaModule {
     if (!mEnabled) {
       return;
     }
-    mAnalytics.track(trackText, toProperties(properties));
+    Analytics.with(null).track(trackText, toProperties(properties));
   }
 
   /*
@@ -83,7 +84,7 @@ public class RNSegmentIOAnalyticsModule extends ReactContextBaseJavaModule {
     if (!mEnabled) {
       return;
     }
-    mAnalytics.screen(null, screenName, toProperties(properties));
+    Analytics.with(null).screen(null, screenName, toProperties(properties));
   }
 
   /*
@@ -91,7 +92,7 @@ public class RNSegmentIOAnalyticsModule extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void flush() {
-    mAnalytics.flush();
+    Analytics.with(null).flush();
   }
 
   /*
@@ -99,7 +100,7 @@ public class RNSegmentIOAnalyticsModule extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void reset() {
-    mAnalytics.reset();
+    Analytics.with(null).reset();
   }
 
   /*
@@ -109,7 +110,7 @@ public class RNSegmentIOAnalyticsModule extends ReactContextBaseJavaModule {
   public void debug(Boolean isEnabled) {
     if (isEnabled == mDebug) {
       return;
-    } else if (mAnalytics == null) {
+    } else if (!initialized) {
       mDebug = isEnabled;
     } else {
       log("On Android, debug level may not be changed after calling setup");
