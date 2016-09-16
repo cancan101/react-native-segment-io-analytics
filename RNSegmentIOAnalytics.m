@@ -14,11 +14,14 @@
 
 RCT_EXPORT_MODULE()
 
-RCT_EXPORT_METHOD(setup:(NSString*)configKey :(NSUInteger)flushAt :(BOOL)shouldUseLocationServices :(BOOL)debug)
+RCT_EXPORT_METHOD(setup:(NSString*)configKey :(NSUInteger)flushAt :(BOOL)shouldUseLocationServices
+                       :(BOOL)debug :(BOOL)recordScreenViews :(BOOL)trackApplicationLifecycleEvents)
 {
     SEGAnalyticsConfiguration *configuration = [SEGAnalyticsConfiguration configurationWithWriteKey:configKey];
     configuration.flushAt = flushAt;
     configuration.shouldUseLocationServices = shouldUseLocationServices;
+    configuration.recordScreenViews = recordScreenViews;
+    configuration.trackApplicationLifecycleEvents = trackApplicationLifecycleEvents;
     [SEGAnalytics setupWithConfiguration:configuration];
     [SEGAnalytics debug:debug];
 }
@@ -89,7 +92,7 @@ RCT_EXPORT_METHOD(enable) {
 -(NSMutableDictionary*) convertToStringDictionary: (NSDictionary *)properties {
     /*
      According to React Native's documentation:
-     
+
      For maps, it is the developer's responsibility to check the value types individually by manually calling RCTConvert helper methods.
      */
     NSMutableDictionary *stringDictionary = [[NSMutableDictionary alloc] init];

@@ -23,8 +23,12 @@ var RNSegmentIOAnalytics = {
      * @param flushAt https://segment.com/docs/libraries/ios/#flushing or https://segment.com/docs/libraries/android/#customizing-the-client
      * @param shouldUseLocationServices https://segment.com/docs/libraries/ios/#location-services
      */
-    setup: function (configKey, flushAt = 20, shouldUseLocationServices = false, debug = false) {
-        NativeRNSegmentIOAnalytics.setup(configKey, flushAt, shouldUseLocationServices, debug);
+    setup: function (configKey, flushAt = 20,
+      shouldUseLocationServices = false, debug = false,
+      recordScreenViews = false, trackApplicationLifecycleEvents = false
+    ) {
+        NativeRNSegmentIOAnalytics.setup(configKey, flushAt,
+          shouldUseLocationServices, debug, recordScreenViews, trackApplicationLifecycleEvents);
     },
 
     /*
@@ -34,7 +38,7 @@ var RNSegmentIOAnalytics = {
     identifyUser: function (userId, traits) {
         NativeRNSegmentIOAnalytics.identifyUser(userId, traits);
     },
-    
+
     /*
      * https://segment.com/docs/libraries/ios/#alias
      */

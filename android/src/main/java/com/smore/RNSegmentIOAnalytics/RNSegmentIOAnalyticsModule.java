@@ -12,6 +12,8 @@ import com.segment.analytics.Analytics.Builder;
 import com.segment.analytics.Properties;
 import com.segment.analytics.Traits;
 import com.segment.analytics.Options;
+import com.segment.analytics.ValueMap;
+
 import android.util.Log;
 import android.content.Context;
 
@@ -19,6 +21,10 @@ public class RNSegmentIOAnalyticsModule extends ReactContextBaseJavaModule {
   private static boolean initialized = false;
   private boolean mEnabled = true;
   private boolean mDebug = false;
+
+  public static void initialized(){
+    initialized = true;
+  }
 
   @Override
   public String getName() {
@@ -37,7 +43,10 @@ public class RNSegmentIOAnalyticsModule extends ReactContextBaseJavaModule {
    https://segment.com/docs/libraries/android/#identify
    */
   @ReactMethod
-  public void setup(String writeKey, Integer flushAt, Boolean shouldUseLocationServices) {
+  public void setup(String writeKey, Integer flushAt,
+                    Boolean shouldUseLocationServices, Boolean recordScreenViews,
+                    Boolean trackApplicationLifecycleEvents) {
+
     if (!initialized) {
       Context context = getReactApplicationContext().getApplicationContext();
       Builder builder = new Analytics.Builder(context, writeKey);
@@ -46,7 +55,12 @@ public class RNSegmentIOAnalyticsModule extends ReactContextBaseJavaModule {
       if (mDebug) {
         builder.logLevel(Analytics.LogLevel.DEBUG);
       }
-
+      if (recordScreenViews) {
+        builder.recordScreenViews();
+      }
+      if (trackApplicationLifecycleEvents) {
+        builder.trackApplicationLifecycleEvents();
+      }
       Analytics analytics = builder.build();
       Analytics.setSingletonInstance(analytics);
       initialized = true;
@@ -134,41 +148,47 @@ public class RNSegmentIOAnalyticsModule extends ReactContextBaseJavaModule {
     mEnabled = true;
   }
 
-  private Properties toProperties (ReadableMap map) {
-    if (map == null) {
-      return new Properties();
+  private ValueMap populateValueMap(ReadableMap map, ValueMap valueMap) {
+    if (map == null || valueMap == null) {
+      return valueMap;
     }
-    Properties props = new Properties();
-
     ReadableMapKeySetIterator iterator = map.keySetIterator();
     while (iterator.hasNextKey()) {
       String key = iterator.nextKey();
       ReadableType type = map.getType(key);
       switch (type){
         case Array:
-          props.putValue(key, map.getArray(key));
-          break;
+        valueMap.putValue(key, map.getArray(key));
+        break;
         case Boolean:
-          props.putValue(key, map.getBoolean(key));
-          break;
+        valueMap.putValue(key, map.getBoolean(key));
+        break;
         case Map:
-          props.putValue(key, map.getMap(key));
-          break;
+        valueMap.putValue(key, map.getMap(key));
+        break;
         case Null:
-          props.putValue(key, null);
-          break;
+        valueMap.putValue(key, null);
+        break;
         case Number:
-          props.putValue(key, map.getDouble(key));
-          break;
+        valueMap.putValue(key, map.getDouble(key));
+        break;
         case String:
-          props.putValue(key, map.getString(key));
-          break;
+        valueMap.putValue(key, map.getString(key));
+        break;
         default:
-          log("Unknown type:" + type.name());
-          break;
+        log("Unknown type:" + type.name());
+        break;
       }
     }
-    return props;
+    return valueMap;
+  }
+
+  private Properties toProperties (ReadableMap map) {
+    if (map == null) {
+      return new Properties();
+    }
+    Properties props = new Properties();
+    return (Properties) populateValueMap(map, props);
   }
 
   private Traits toTraits (ReadableMap map) {
@@ -176,36 +196,7 @@ public class RNSegmentIOAnalyticsModule extends ReactContextBaseJavaModule {
       return new Traits();
     }
     Traits traits = new Traits();
-
-    ReadableMapKeySetIterator iterator = map.keySetIterator();
-    while (iterator.hasNextKey()) {
-      String key = iterator.nextKey();
-      ReadableType type = map.getType(key);
-      switch (type){
-        case Array:
-          traits.putValue(key, map.getArray(key));
-          break;
-        case Boolean:
-          traits.putValue(key, map.getBoolean(key));
-          break;
-        case Map:
-          traits.putValue(key, map.getMap(key));
-          break;
-        case Null:
-          traits.putValue(key, null);
-          break;
-        case Number:
-          traits.putValue(key, map.getDouble(key));
-          break;
-        case String:
-          traits.putValue(key, map.getString(key));
-          break;
-        default:
-          log("Unknown type:" + type.name());
-          break;
-      }
-    }
-    return traits;
+    return (Traits) populateValueMap(map, traits);
   }
 
   private Options toOptions (ReadableMap map) {
